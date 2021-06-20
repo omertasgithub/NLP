@@ -29,7 +29,7 @@ paper = news_data.News(api_key)
 #it seems no data avilable before Thu 21 May 2020
 #this could be trouble because covid caused unusual market move
 
-result = paper.news(company_tickers="AAPL",date_from='2020-06-14', date_to='2020-07-18', pagesize=200)
+result = paper.news(company_tickers="AAPL",date_from='2020-06-14', date_to='2020-06-21', pagesize=200)
 #pprint.pprint(result)
 #print(len(result))
 #print(result[4])
@@ -38,6 +38,17 @@ result = paper.news(company_tickers="AAPL",date_from='2020-06-14', date_to='2020
 dic = {}
 for i in range(len(result)):
     dic[result[i]['updated']] = result[i]['title']
+    
+    
+"""
+yahoo stock issues
+1 Failed download:
+- AAPL: 1m data not available for startTime=1592110800 and endTime=1592715600. The requested range must be within the last 30 days.
+Empty DataFrame
+Columns: [Open, High, Low, Close, Adj Close, Volume]
+Index: []
+
+"""
     
 stock_data = pd.read_csv("data.csv")    
 #pprint.pprint(dic) 
