@@ -70,7 +70,14 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 vader = SentimentIntensityAnalyzer()
 scores = stock_news_headline['News_headline'].apply(vader.polarity_scores).tolist()
+compound_scores = [scores[i]["compound"] for i in range(len(scores))]
 
+#add compound score inot stoakc_news_headline data frame
+stock_news_headline["compound score"] = compound_scores 
+print(stock_data)
+print(stock_news_headline)
+
+#how can we compare dates between to different dataframe
 
 
 #pprint.pprint(dic) 
