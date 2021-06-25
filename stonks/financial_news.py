@@ -76,8 +76,8 @@ compound_scores = [scores[i]["compound"] for i in range(len(scores))]
 
 #add compound score inot stoakc_news_headline data frame
 stock_news_headline["compound score"] = compound_scores 
-print(stock_data)
-print(stock_news_headline)
+#print(stock_data)
+#print(stock_news_headline)
 
 #how can we compare dates between to different dataframe?
 #the date from benzinga is formated as Tue, 01 Jun 2021 07:05:36 -0400
@@ -92,8 +92,21 @@ yahoo_datetime = [i[:-9] for i in stock_data["Datetime"]]
 stock_data["Datetime"] = yahoo_datetime
 
 #now do similar for stock_news_headline data 
-stock_news_time = [i[:-9] for i in stock_news_headline["Time"]]
+stock_news_time = [i[5:-9] for i in stock_news_headline["Time"]]
+#i am not sure this could be done in better way, check for better way 
+#may be regex?
 stock_news_headline["Time"] = stock_news_time
+
+#now we have 01 Jun 2021 07:05 for stock news
+#and we have 2021-06-01 09:30 for yahoo stock
+#lets convert stok date time format into yahoo's
+list_news_time = [i.replace('Jun','06') for i in stock_news_headline["Time"]]
+stock_news_headline["Time"] = list_news_time
+
+
+print(stock_data)
+print(stock_news_headline)
+
 
 #pprint.pprint(dic) 
 """
@@ -111,7 +124,8 @@ soup = BeautifulSoup(page.content, 'html.parser').get_text()
 
 #beatiful soup gets body of the page but there
 #are constant paragrpahs like mission statement vs on every page
-#this extra words could be a trouble because they appear on every page and has nothing to do with the news
+#this extra words could be a trouble because they appear on every page and has 
+nothing to do with the news
 
 #body start from key word #Share but there is no specieific key word to end it
 #not like wikie pedia.  it is unorgnaized
