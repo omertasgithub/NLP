@@ -29,7 +29,9 @@ paper = news_data.News(api_key)
 #it seems no data avilable before Thu 21 May 2020
 #this could be trouble because covid caused unusual market move recent years
 
-result = paper.news(company_tickers="AAPL",date_from='2021-05-22', date_to='2021-06-20', pagesize=200)
+result = paper.news(company_tickers="AAPL",date_from="2021-06-01", date_to="2021-06-08", pagesize=200)
+
+
 #pprint.pprint(result)
 print(len(result))
 """
@@ -56,8 +58,8 @@ Columns: [Open, High, Low, Close, Adj Close, Volume]
 Index: []
 
 
-#data = yf.download('AAPL', start="2021-05-22", end="2021-06-20", interval='2m')
-#onyl last 25 days data   
+data = yf.download('AAPL', start="2021-06-01", end="2021-06-08", interval='1m')
+#onyl 1 week data
 """  
 stock_data = pd.read_csv("data.csv")   
 
@@ -77,8 +79,21 @@ stock_news_headline["compound score"] = compound_scores
 print(stock_data)
 print(stock_news_headline)
 
-#how can we compare dates between to different dataframe
+#how can we compare dates between to different dataframe?
+#the date from benzinga is formated as Tue, 01 Jun 2021 07:05:36 -0400
+#the date from yahoo is formated as 2021-06-01 09:30:00-04:00
+#first slice yahoo date from this format Tue, 01 Jun 2021 07:05:36 -0400 to 
+#2021-06-01 09:30 get rid of -00-0400 and do similar for yahoo date
+#we dont need seconds so remove that as well
 
+yahoo_datetime = [i[:-9] for i in stock_data["Datetime"]]
+#now Datetime is in 2021-06-03 12:35 format
+#now replace this with existing Datetime column
+stock_data["Datetime"] = yahoo_datetime
+
+#now do similar for stock_news_headline data 
+stock_news_time = [i[:-9] for i in stock_news_headline["Time"]]
+stock_news_headline["Time"] = stock_news_time
 
 #pprint.pprint(dic) 
 """
@@ -111,8 +126,8 @@ x = soup.split("Share:")[1].split("\n\n\n\n\n")[1]
 
 
 print(x)
+print(vader.polarity_scores(x))
 """
-
 
 
 
