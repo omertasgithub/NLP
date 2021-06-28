@@ -1,3 +1,10 @@
+"""
+
+????
+"""
+
+
+
 import pandas as pd
 import numpy as np
 
@@ -109,7 +116,7 @@ print(stock_news_headline)
 
 
 #pprint.pprint(dic) 
-"""
+
 dic = {}
 for i in range(len(result)):
     dic[result[i]['updated']] = result[i]['url']
@@ -120,12 +127,16 @@ page = requests.get(link)
 page
 
 from bs4 import BeautifulSoup
-soup = BeautifulSoup(page.content, 'html.parser').get_text()
+soup = BeautifulSoup(page.content, 'html.parser') #.get_text()
+
+article_content = soup.find("div", {"class": "article-content-body-only"}).text
+print(article_content)
+print(vader.polarity_scores(article_content))
 
 #beatiful soup gets body of the page but there
 #are constant paragrpahs like mission statement vs on every page
 #this extra words could be a trouble because they appear on every page and has 
-nothing to do with the news
+#nothing to do with the news
 
 #body start from key word #Share but there is no specieific key word to end it
 #not like wikie pedia.  it is unorgnaized
@@ -141,7 +152,27 @@ x = soup.split("Share:")[1].split("\n\n\n\n\n")[1]
 
 print(x)
 print(vader.polarity_scores(x))
+
+"""
+Note: check pre market move???
+soup.find({'div': 'content-article-body-only'})
+body = soup.find({'div': 'content-article-body-only'})
+article_content = body.text
+
+article_content = soup.find("div", {"class": "article-content-body-only"}).text
 """
 
+"""
+notes from 
+my_date_string = year+'-'+str(actual_month_number)+'-'+day
+        print(f"Constructed Date String is {my_date_string}")
 
+        my_date = datetime.datetime.strptime(my_date_string, "%Y-%m-%d")
 
+        print(my_date)
+        print('Type: ', type(my_date))
+
+        print('Month: ', my_date.month)  # To Get month from date
+        print('Year: ', my_date.year)  # To Get month from year
+
+"""
