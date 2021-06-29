@@ -110,9 +110,33 @@ stock_news_headline["Time"] = stock_news_time
 list_news_time = [i.replace('Jun','06') for i in stock_news_headline["Time"]]
 stock_news_headline["Time"] = list_news_time
 
+#modif times so they are in the same format
+stock_news_time = [i.split(" ") for i in stock_news_headline["Time"]]
+
+def swap(lst):
+    lst[2],lst[0] = lst[0],lst[2]
+    return "-".join(lst[:-1]) + " " + lst[-1]
+
+stock_news_time = [swap(i) for i in stock_news_time]
+
+stock_news_headline["Time"] = stock_news_time
+
+
+#now both are in the same ormat
+#2021-06-01 09:30 yahooo
+#2021-06-01-07:05 news
+
+stock_data.rename(columns={'Datetime':"Time"}, inplace=True)
 
 print(stock_data)
 print(stock_news_headline)
+
+merge_by = pd.merge(stock_news_headline, stock_data.reset_index(), how='inner')
+#we know the intersection of the news came in
+#2021-06-01 10:06 so we find the diference of one minute ahead and later
+def diifernce(string):
+    
+
 
 
 #pprint.pprint(dic) 
@@ -133,6 +157,10 @@ article_content = soup.find("div", {"class": "article-content-body-only"}).text
 print(article_content)
 print(vader.polarity_scores(article_content))
 
+
+
+
+
 #beatiful soup gets body of the page but there
 #are constant paragrpahs like mission statement vs on every page
 #this extra words could be a trouble because they appear on every page and has 
@@ -146,14 +174,10 @@ print(vader.polarity_scores(article_content))
 #print(soup)
 #print(soup.prettify())
 
-x = soup.split("Share:")[1].split("\n\n\n\n\n")[1]
 
-
-
-print(x)
-print(vader.polarity_scores(x))
 
 """
+not simileat to
 Note: check pre market move???
 soup.find({'div': 'content-article-body-only'})
 body = soup.find({'div': 'content-article-body-only'})
@@ -162,17 +186,3 @@ article_content = body.text
 article_content = soup.find("div", {"class": "article-content-body-only"}).text
 """
 
-"""
-notes from 
-my_date_string = year+'-'+str(actual_month_number)+'-'+day
-        print(f"Constructed Date String is {my_date_string}")
-
-        my_date = datetime.datetime.strptime(my_date_string, "%Y-%m-%d")
-
-        print(my_date)
-        print('Type: ', type(my_date))
-
-        print('Month: ', my_date.month)  # To Get month from date
-        print('Year: ', my_date.year)  # To Get month from year
-
-"""
