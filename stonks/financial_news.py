@@ -1,8 +1,9 @@
 """
+not all of them in content-body only but 90% in that fomar
+do try and expect and store only the one has 
+<div class="article-content-body-only">…</div>
 
-????
 """
-
 
 
 import pandas as pd
@@ -134,13 +135,18 @@ print(stock_news_headline)
 merge_by = pd.merge(stock_news_headline, stock_data.reset_index(), how='inner')
 #we know the intersection of the news came in
 #2021-06-01 10:06 so we find the diference of one minute ahead and later
-def diifernce(string):
-    
+minute_ago = [i-1 for i in merge_by["index"]]
+minute_later = [i+1 for i in merge_by["index"]]
+price_change = [stock_data["High"][j]-stock_data["High"][i] 
+                for i, j in zip(minute_ago,minute_later)]
+#we have news headline score and effects
 
 
+dataFrame = pd.DataFrame()
+dataFrame["price change"] = price_change
+dataFrame["compound scores"] = merge_by["compound score"]
 
 #pprint.pprint(dic) 
-
 dic = {}
 for i in range(len(result)):
     dic[result[i]['updated']] = result[i]['url']
@@ -157,7 +163,20 @@ article_content = soup.find("div", {"class": "article-content-body-only"}).text
 print(article_content)
 print(vader.polarity_scores(article_content))
 
-
+article_scores = []
+tr=0
+for i,j in dic.items():
+    link = j
+    page = requests.get(link)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    try:
+        article_content = soup.find("div", {"class": "article-content-body-only"}).text
+        score = vader.polarity_scores(article_content)
+        print(score)
+    except:
+        print("not there")
+    
+    
 
 
 
