@@ -41,7 +41,7 @@ result = paper.news(company_tickers="AAPL",date_from="2021-06-01", date_to="2021
 
 
 #pprint.pprint(result)
-print(len(result))
+#print(len(result))
 """
 lenght of the data is not more than 100 regardles of date interval
 one solution could be pulling data within 1 week interval then combine 
@@ -49,38 +49,46 @@ instead of pulling data between date_from='2021-05-22', date_to='2021-06-20'
 it can be done between '2021-05-22', '2021-05-27','2021-06-5','2021-06-15','2021-06-20'
 The combine them may be there could be 500 line of news instead of 100
 """
-#print(result[4])
 
-#Don snetiment analysis with title only
 dic = {}
 for i in range(len(result)):
-    dic[result[i]['updated']] = result[i]['title']
-    
-    
-"""
-yahoo stock issues
-1 Failed download:
-- AAPL: 1m data not available for startTime=1592110800 and endTime=1592715600. The requested range must be within the last 30 days.
-Empty DataFrame
-Columns: [Open, High, Low, Close, Adj Close, Volume]
-Index: []
+    dic[result[i]['updated']] = result[i]['url']
+stock_data = pd.read_csv("data.csv")   
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+vader = SentimentIntensityAnalyzer()
+import requests
+from bs4 import BeautifulSoup
 
 
-data = yf.download('AAPL', start="2021-06-01", end="2021-06-08", interval='1m')
-#onyl 1 week data
-"""  
+
+for i,j in dic.items():
+    link = j
+    page = requests.get(link)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    try:
+        article_content = soup.find("div", {"class": "article-content-body-only"}).text
+        #if '\nThis headline-only' != article_content[:19]:
+        dic[i]=article_content
+        #else:
+         #   dic[i]=None
+            
+    except:
+        dic[i]=None
+    
 stock_data = pd.read_csv("data.csv")   
 
 #time and new headline stored into dic. Lets create a dataframe  
 stock_news_headline = pd.DataFrame(dic.items(), columns = ["Time", "News_headline"])
 
-
-#vader sentiment anlaysis 
+stock_news_headline = stock_news_headline[stock_news_headline['News_headline'].notna()]
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 vader = SentimentIntensityAnalyzer()
 scores = stock_news_headline['News_headline'].apply(vader.polarity_scores).tolist()
 compound_scores = [scores[i]["compound"] for i in range(len(scores))]
+
+
+
 
 #add compound score inot stoakc_news_headline data frame
 stock_news_headline["compound score"] = compound_scores 
@@ -145,68 +153,8 @@ price_change = [stock_data["High"][j]-stock_data["High"][i]
 dataFrame = pd.DataFrame()
 dataFrame["price change"] = price_change
 dataFrame["compound scores"] = merge_by["compound score"]
+
+
 match = sum(sum([np.sign(dataFrame["price change"])==np.sign(dataFrame["compound scores"])]))
 
 print(match/dataFrame.shape[0])
-
-
-"""
-#pprint.pprint(dic) 
-dic = {}
-for i in range(len(result)):
-    dic[result[i]['updated']] = result[i]['url']
-
-import requests
-link = result[4]['url']
-page = requests.get(link)
-page
-
-from bs4 import BeautifulSoup
-soup = BeautifulSoup(page.content, 'html.parser') #.get_text()
-
-article_content = soup.find("div", {"class": "article-content-body-only"}).text
-print(article_content)
-print(vader.polarity_scores(article_content))
-
-article_scores = []
-tr=0
-for i,j in dic.items():
-    link = j
-    page = requests.get(link)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    try:
-        article_content = soup.find("div", {"class": "article-content-body-only"}).text
-        score = vader.polarity_scores(article_content)
-        print(score)
-    except:
-        print("not there")
-    
-    
-"""
-
-
-#beatiful soup gets body of the page but there
-#are constant paragrpahs like mission statement vs on every page
-#this extra words could be a trouble because they appear on every page and has 
-#nothing to do with the news
-
-#body start from key word #Share but there is no specieific key word to end it
-#not like wikie pedia.  it is unorgnaized
-#Also, some url is about benzinga adds only
-#using regex inconvinient 
-
-#print(soup)
-#print(soup.prettify())
-
-
-
-"""
-not simileat to
-Note: check pre market move???
-soup.find({'div': 'content-article-body-only'})
-body = soup.find({'div': 'content-article-body-only'})
-article_content = body.text
-
-article_content = soup.find("div", {"class": "article-content-body-only"}).text
-"""
-
