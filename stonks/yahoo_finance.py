@@ -46,7 +46,15 @@ data4.to_csv("data4.csv")
 # print(d)
 """
 
+import yfinance as yf
+import pandas as pd
 
+data5 = yf.download('AAPL', start="2021-06-27", end="2021-07-04", interval='1m')
+print(data5)
+data5.to_csv("data5.csv")
+
+# d = pd.read_csv("data.csv")
+# print(d)
 
 
 

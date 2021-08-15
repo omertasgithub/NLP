@@ -13,7 +13,7 @@ from benzinga import news_data
 import pprint
 api_key = "73711d8727b84da28609c76185c57afb"
 
-
+##
 """
 Arguments:
     Optional:
@@ -42,14 +42,16 @@ stock_data1 = pd.read_csv("data1.csv")   #'AAPL', start="2021-06-01", end="2021-
 stock_data2 = pd.read_csv("data2.csv")   #'AAPL', start="2021-06-08", end="2021-06-13", interval='1m'
 stock_data3 = pd.read_csv("data3.csv")   #'AAPL', start="2021-06-13", end="2021-06-20", interval='1m'
 stock_data4 = pd.read_csv("data4.csv")   #'AAPL', start="2021-06-20", end="2021-06-27", interval='1m'
-frames_yahoo = [stock_data1, stock_data2, stock_data3, stock_data4]
+stock_data5 = pd.read_csv("data5.csv")   #'AAPL', start="2021-06-27", end="2021-07-04", interval='1m'
+frames_yahoo = [stock_data1, stock_data2, stock_data3, stock_data4, stock_data5]
 stock_data = pd.concat(frames_yahoo, ignore_index=True)
 #stock_data=stock_data1
 result1 = paper.news(company_tickers="AAPL",date_from="2021-06-01", date_to="2021-06-08", pagesize=200)
 result2 = paper.news(company_tickers="AAPL",date_from="2021-06-08", date_to="2021-06-13", pagesize=200)
 result3 = paper.news(company_tickers="AAPL",date_from="2021-06-13", date_to="2021-06-20", pagesize=200)
 result4 = paper.news(company_tickers="AAPL",date_from="2021-06-20", date_to="2021-06-27", pagesize=200)
-result=result1+result2+result3+result4
+result5 = paper.news(company_tickers="AAPL",date_from="2021-06-27", date_to="2021-07-04", pagesize=200)
+result=result1+result2+result3+result4+result5
 #pprint.pprint(result)
 #print(len(result))
 """
@@ -70,14 +72,14 @@ import requests
 from bs4 import BeautifulSoup
 
 
-
+common = ['\nThis headline-only','\nThis unusual optio','\n\nThis headline-onl']
 for i,j in dic.items():
     link = j
     page = requests.get(link)
     soup = BeautifulSoup(page.content, 'html.parser')
     try:
         article_content = soup.find("div", {"class": "article-content-body-only"}).text
-        if '\nThis headline-only' != article_content[:19] and '\nThis unusual optio'!= article_content[:19]:
+        if article_content[:19] not in common:
             dic[i]=article_content
         
         else:
@@ -155,7 +157,7 @@ merge_by = pd.merge(stock_news_headline, stock_data.reset_index(), how='inner')
 #2021-06-01 10:06 so we find the diference of one minute ahead and later
 minute_in = [i for i in merge_by["index"]]
 minute_later = [i+1 for i in merge_by["index"]]
-price_change = [stock_data["High"][j]-stock_data["High"][i] 
+price_change = [stock_data["Close"][j]-stock_data["Close"][i] 
                 for i, j in zip(minute_in,minute_later)]
 #we have news headline score and effects
 
